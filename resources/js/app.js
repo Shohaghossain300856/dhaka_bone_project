@@ -1,6 +1,9 @@
 import { createApp } from "vue";
 import Dashboard from "./components/Dashboard/Dashboard.vue";
+import BoneCreate from "./components/backend/BoneCases/BoneCreate.vue";
+import boneDetails from "./components/backend/BoneCases/boneDetailsCreate.vue";
 import http from "./lib/http";
+
 
 // loader
 import Loading from "vue-loading-overlay";
@@ -19,6 +22,8 @@ const app = createApp({});
 app.config.globalProperties.$http = http;
 app.component("Loading", Loading);
 app.component("dashboard", Dashboard);
+app.component("bonecreate", BoneCreate);
+app.component("bonedetails", boneDetails);
  
  
 app.use(Toast, {

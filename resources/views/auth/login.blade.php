@@ -3,16 +3,7 @@
     <!-- Login -->
     <div class="card">
         <div class="card-body">
-            <!-- Logo -->
-            <div class="app-brand justify-content-center mb-4 mt-2">
-                <a href="{{route('home')}}" class="app-brand-link gap-2">
-                    <span class="app-brand-text demo text-body fw-bold ms-1">
-                        <img style="width: 100px;" src="https://upload.wikimedia.org/wikipedia/bn/thumb/8/82/%E0%A6%AE%E0%A6%AE%E0%A7%87%E0%A6%95_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.png/250px-%E0%A6%AE%E0%A6%AE%E0%A7%87%E0%A6%95_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.png">
-                    </span>
-                </a>
-            </div>
-            <!-- /Logo -->
-            <h4 class="mb-1 pt-2">Mymensingh Medical College</h4>
+            <h4 class="mb-1 pt-2">Dhaka Medical Collage</h4>
             <p class="mb-4">Log in to your account and get started</p>
             <form id="formAuthentication" class="mb-3" action="{{route('login')}}" method="post">
                 @csrf

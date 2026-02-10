@@ -6,13 +6,16 @@ use App\Http\Controllers\Backend\ProfileController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\UserController;
+use App\Http\Controllers\Backend\BoneCaseController;
+use App\Http\Controllers\Backend\BoneDetailsController;
+use App\Http\Controllers\Backend\BoneImageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth','checkUserStatus'])->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'home')->name('dashboard');
-        Route::get('/dashboard/counts', [DashboardController::class, 'create'])->name('dashboard.counts');
+        Route::get('/dashboard/bones', [DashboardController::class, 'create'])->name('dashboard.bones');
     });
 
     Route::get('/getuser_id', function () {
@@ -57,6 +60,9 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
     });
 
     
+
+    Route::resource('bone-cases-create',BoneCaseController::class);
+    Route::resource('bone-details-create',BoneDetailsController::class);
 
 });
 

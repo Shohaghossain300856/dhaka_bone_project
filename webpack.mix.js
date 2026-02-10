@@ -8,6 +8,8 @@ mix.js('resources/js/app.js', 'public/js')
 mix.webpackConfig({
   resolve: {
     alias: {
+        '@': path.resolve(__dirname, 'resources/js/'), 
+        '@utils': path.resolve(__dirname, 'resources/js/Utility'), 
       'vue$': path.resolve(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js'),
       'vue':  path.resolve(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js'),
     },

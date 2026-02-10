@@ -14,7 +14,38 @@
     </a>
   </li>
 
+  @canany(['bone-cases'])
+
+<li class="menu-item {{ request()->routeIs('bone-cases.*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons ti ti-bone"></i>
+        <div data-i18n="Bone Cases">Bone Cases</div>
+    </a>
+
+    <ul class="menu-sub" style="{{ request()->routeIs('bone-cases.*') ? 'display:block;' : '' }}">
+
+        {{-- Add Bone Case --}}
+        <li class="menu-item {{ request()->routeIs('bone-cases.index') ? 'active' : '' }}">
+            <a href="{{ route('bone-cases-create.index') }}" class="menu-link">
+                <div data-i18n="Add Bone Case">Add Bone </div>
+            </a>
+        </li>     
+
+        {{-- Add Bone Case --}}
+        <li class="menu-item {{ request()->routeIs('bone-details-create.index') ? 'active' : '' }}">
+            <a href="{{ route('bone-details-create.index') }}" class="menu-link">
+                <div data-i18n="Add Bone Case">Add Bone Details</div>
+            </a>
+        </li> 
+
+    </ul>
+</li>
+
+@endcanany
+
+
   {{-- Setting --}}
+
   @canany(['setting-index','setting-create','setting-edit','setting-delete'])
     @php
       $settingOpen = request()->is('backend/setting/*') || request()->routeIs('setting.*');
@@ -96,7 +127,7 @@
     </li>
   @endcanany
 
-  {{-- Profile --}}
+<!--   {{-- Profile --}}
   <li class="menu-item {{ request()->routeIs('profile') ? 'active' : '' }}">
     <a href="{{ route('profile') }}" class="menu-link">
       <i class="menu-icon tf-icons ti ti-user"></i>
@@ -110,8 +141,8 @@
       <i class="menu-icon tf-icons ti ti-lock-check"></i>
       <div data-i18n="Change Password">Change Password</div>
     </a>
-  </li>
-
+  </li> -->
+<!-- 
   {{-- Logout --}}
   <li class="menu-item">
     <div class="d-grid px-2 pt-2 pb-1">
@@ -128,7 +159,7 @@
         @csrf
       </form>
     </div>
-  </li>
+  </li> -->
 </ul>
 
 <style>
