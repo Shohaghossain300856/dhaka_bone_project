@@ -26,17 +26,17 @@
         <div class="col-md-6">
           <label class="form-label">Starting Price</label>
           <input v-model="form.starting_price" type="number" :class="['form-control', errors.starting_price ? 'is-invalid' : '']" placeholder="0.00">
-           <div v-if="errors.starting_price" class="invalid-feedback">{{ errors.starting_price[0] }}</div>
+          <div v-if="errors.starting_price" class="invalid-feedback">{{ errors.starting_price[0] }}</div>
         </div>
         <div class="col-md-6">
-        <label class="form-label">Start Date</label>
-        <MyDateInput v-model="form.start_date" :class="errors.start_date ? 'is-invalid' : ''" />
-        <div v-if="errors.start_date" class="text-danger small mt-1">{{ errors.start_date[0] }}</div>
-      </div>
-       <div class="col-md-6">
-            <label class="form-label">Expire Date</label>
-            <MyDateInput v-model="form.expire_date" :class="errors.expire_date ? 'is-invalid' : ''" />
-            <div v-if="errors.expire_date" class="text-danger small mt-1">{{ errors.expire_date[0] }}</div>
+          <label class="form-label">Start Date</label>
+          <MyDateInput v-model="form.start_date" :class="errors.start_date ? 'is-invalid' : ''" />
+          <div v-if="errors.start_date" class="text-danger small mt-1">{{ errors.start_date[0] }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Expire Date</label>
+          <MyDateInput v-model="form.expire_date" :class="errors.expire_date ? 'is-invalid' : ''" />
+          <div v-if="errors.expire_date" class="text-danger small mt-1">{{ errors.expire_date[0] }}</div>
         </div>
 
         <div class="col-md-6">
@@ -45,18 +45,18 @@
           <div v-if="errors.image" class="invalid-feedback" style="display: block;">{{ errors.image[0] }}</div>
         </div>
 
-<div class="col-12">
-  <label class="form-label">Description</label>
-  <textarea 
-    v-model="form.description" 
-    :class="['form-control', errors.description ? 'is-invalid' : '']" 
-    rows="2"
-  ></textarea>
-  
-  <div v-if="errors.description" class="invalid-feedback">
-    {{ errors.description[0] }}
-  </div>
-</div>
+        <div class="col-12">
+          <label class="form-label">Description</label>
+          <textarea 
+          v-model="form.description" 
+          :class="['form-control', errors.description ? 'is-invalid' : '']" 
+          rows="2"
+          ></textarea>
+          
+          <div v-if="errors.description" class="invalid-feedback">
+            {{ errors.description[0] }}
+          </div>
+        </div>
       </div>
 
       <div class="pt-6 mt-4">
@@ -129,145 +129,145 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, getCurrentInstance } from "vue";
-  import { useToast } from "vue-toastification";
-  import MyDateInput from "@utils/FriendlyDatePicker.vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
+import { useToast } from "vue-toastification";
+import MyDateInput from "@utils/FriendlyDatePicker.vue";
 
-  const toast = useToast();
-  const { proxy } = getCurrentInstance();
-  const http = proxy.$http;
-  const FontendURL = proxy.$http.defaults.FontendURL; 
+const toast = useToast();
+const { proxy } = getCurrentInstance();
+const http = proxy.$http;
+const FontendURL = proxy.$http.defaults.FontendURL; 
 
-  const items = ref([]);
-  const isLoading = ref(false);
-  const isEditing = ref(false);
-  const editId = ref(null);
-  const imagePreview = ref(null);
-  const deleteId = ref(null);
-  const errors = ref({});
-  const form = ref({
-    title: '',
-    name: '',
-    starting_price: '',
-    start_date: '',
-    expire_date: '',
-    description: '',
-    image: null
+const items = ref([]);
+const isLoading = ref(false);
+const isEditing = ref(false);
+const editId = ref(null);
+const imagePreview = ref(null);
+const deleteId = ref(null);
+const errors = ref({});
+const form = ref({
+  title: '',
+  name: '',
+  starting_price: '',
+  start_date: '',
+  expire_date: '',
+  description: '',
+  image: null
+});
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.value.image = file;
+    imagePreview.value = URL.createObjectURL(file);
+  }
+};
+
+const removeImage = () => {
+  form.value.image = null;
+  imagePreview.value = null;
+};
+
+const fetchItems = async () => {
+  try {
+    const res = await http.get('/bone-cases-create/create'); 
+    items.value = res.data;
+    console.log(items.valu)
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const submitForm = async () => {
+  isLoading.value = true;
+  errors.value = {}; 
+
+  const formData = new FormData();
+  Object.keys(form.value).forEach(key => {
+    if (form.value[key] !== null) {
+      formData.append(key, form.value[key]);
+    }
   });
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      form.value.image = file;
-      imagePreview.value = URL.createObjectURL(file);
+  if (isEditing.value) {
+    formData.append('_method', 'PUT');
+  }
+
+  try {
+    const url = isEditing.value ? `/bone-cases-create/${editId.value}` : '/bone-cases-create';
+    const response = await http.post(url, formData);
+
+    if (response.status === 200 || response.status === 201) {
+      toast.success(isEditing.value ? "Post Updated successfully!" : "Post Created successfully!");
+      resetForm();
+      fetchItems();
     }
-  };
-
-  const removeImage = () => {
-    form.value.image = null;
-    imagePreview.value = null;
-  };
-
-  const fetchItems = async () => {
-    try {
-      const res = await http.get('/bone-cases-create/create'); 
-      items.value = res.data;
-      console.log(items.valu)
-    } catch (error) {
-      console.error(error);
+  } catch (error) {
+    if (error.response?.status === 422) {
+      errors.value = error.response.data.errors;
+      toast.error("Validation Failed!");
+    } else {
+      toast.error("Something went wrong!");
     }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const editItem = (item) => {
+  isEditing.value = true;
+  editId.value = item.id;
+
+  form.value = {
+    title: item.title ?? '',
+    name: item.name ?? '',
+    starting_price: item.starting_price ?? '',
+    start_date: item.start_date ?? '',
+    expire_date: item.expire_date ?? '',
+    description: item.description ?? '',
+    image: null,
   };
 
-  const submitForm = async () => {
-    isLoading.value = true;
-    errors.value = {}; 
+  imagePreview.value = item.image ? (FontendURL + item.image) : null;
 
-    const formData = new FormData();
-    Object.keys(form.value).forEach(key => {
-      if (form.value[key] !== null) {
-        formData.append(key, form.value[key]);
-      }
-    });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
-    if (isEditing.value) {
-      formData.append('_method', 'PUT');
-    }
+const deleteItem = (id) => {
+  deleteId.value = id;
+  const myModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+  myModal.show();
+};
 
-    try {
-      const url = isEditing.value ? `/bone-cases-create/${editId.value}` : '/bone-cases-create';
-      const response = await http.post(url, formData);
+const confirmDelete = async () => {
+  if (!deleteId.value) return;
 
-      if (response.status === 200 || response.status === 201) {
-        toast.success(isEditing.value ? "Post Updated successfully!" : "Post Created successfully!");
-        resetForm();
-        fetchItems();
-      }
-    } catch (error) {
-      if (error.response?.status === 422) {
-        errors.value = error.response.data.errors;
-        toast.error("Validation Failed!");
-      } else {
-        toast.error("Something went wrong!");
-      }
-    } finally {
-      isLoading.value = false;
-    }
-  };
+  try {
+    await http.delete(`/bone-cases-create/${deleteId.value}`);
+    toast.info("Post Deleted Successfully!");
 
-  const editItem = (item) => {
-    isEditing.value = true;
-    editId.value = item.id;
+    const modalElement = document.getElementById('deleteModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
 
-    form.value = {
-      title: item.title ?? '',
-      name: item.name ?? '',
-      starting_price: item.starting_price ?? '',
-      start_date: item.start_date ?? '',
-      expire_date: item.expire_date ?? '',
-      description: item.description ?? '',
-      image: null,
-    };
+    fetchItems(); 
+  } catch (error) {
+    toast.error("Delete failed!");
+  } finally {
+    deleteId.value = null;
+  }
+};
 
-    imagePreview.value = item.image ? (FontendURL + item.image) : null;
+const resetForm = () => {
+  form.value = { title: '', name: '', starting_price: '', start_date: '', expire_date: '', description: '', image: null };
+  imagePreview.value = null;
+  isEditing.value = false;
+  editId.value = null;
+  errors.value = {}; 
+};
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+onMounted(() => {
 
-  const deleteItem = (id) => {
-    deleteId.value = id;
-    const myModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    myModal.show();
-  };
-
-  const confirmDelete = async () => {
-    if (!deleteId.value) return;
-
-    try {
-      await http.delete(`/bone-cases-create/${deleteId.value}`);
-      toast.info("Post Deleted Successfully!");
-
-      const modalElement = document.getElementById('deleteModal');
-      const modalInstance = bootstrap.Modal.getInstance(modalElement);
-      modalInstance.hide();
-
-      fetchItems(); 
-    } catch (error) {
-      toast.error("Delete failed!");
-    } finally {
-      deleteId.value = null;
-    }
-  };
-
-  const resetForm = () => {
-    form.value = { title: '', name: '', starting_price: '', start_date: '', expire_date: '', description: '', image: null };
-    imagePreview.value = null;
-    isEditing.value = false;
-    editId.value = null;
-    errors.value = {}; 
-  };
-
-  onMounted(() => {
-
-    fetchItems();
-  });
+  fetchItems();
+});
 </script>

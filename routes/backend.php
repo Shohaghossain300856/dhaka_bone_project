@@ -63,6 +63,7 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
 
     Route::resource('bone-cases-create',BoneCaseController::class);
     Route::resource('bone-details-create',BoneDetailsController::class);
+   Route::post('bids-create', [BoneCaseController::class, 'bidsCreate']);
 
 });
 

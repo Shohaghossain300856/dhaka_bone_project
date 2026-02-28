@@ -25,11 +25,16 @@ class DashboardController extends Controller
 
 public function create()
 {
-  $bones = BonePost::with('user','details.images')->get();
-  return response()->json([
-      'success' => true,
-      'data' => $bones
-  ], 200);
+    $bones = BonePost::with([
+        'latestBid.user',
+        'user',
+        'details.images'
+    ])->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $bones
+    ], 200);
 }
 
 }

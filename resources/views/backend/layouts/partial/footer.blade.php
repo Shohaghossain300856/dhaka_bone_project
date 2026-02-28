@@ -4,10 +4,7 @@
                   class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
                   <div class="text-body">
                     ©
-                    <script>
-                      document.write(new Date().getFullYear());
-                    </script>
-                    , made with ❤️ by <a href="https://nsmlimited.com" target="_blank" class="footer-link">NSM Limited</a>
+                   {{date('Y')}} , made with ❤️ by <a href="https://nsmlimited.com" target="_blank" class="footer-link">NSM Limited</a>
                   </div>
 
                 </div>

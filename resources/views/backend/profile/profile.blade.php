@@ -13,7 +13,7 @@
             <div class="col-12">
                 <div class="card mb-4">
                     <div class="user-profile-header-banner">
-                        <img id="coverImagePreview" style="width: 995px; height: 250px" src="{{asset("storage/user/$user->cover_image")}}" alt="Banner image" class="rounded-top" />
+                        <img id="coverImagePreview" style="width: 995px; height: 309px" src="{{asset("storage/user/$user->cover_image")}}" alt="Banner image" class="rounded-top" />
                     </div>
                     <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
                         <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">

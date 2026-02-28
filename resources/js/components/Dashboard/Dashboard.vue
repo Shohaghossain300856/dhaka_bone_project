@@ -58,190 +58,277 @@
           </select>
 
           <div class="form-check form-switch ms-2">
-            <input type="checkbox" class="form-check-input" id="HideExpired" />
-            <label class="form-check-label" for="HideExpired">Hide expired</label>
-          </div>
-        </div>
-      </div>
+           <input
+           type="checkbox"
+           class="form-check-input"
+           id="HideExpired"
+           v-model="hideExpired"
+           />
+           <label class="form-check-label" for="HideExpired">Hide expired</label>
+         </div>
+       </div>
+     </div>
 
-      <div class="card-body pt-4">
-        <div class="row gy-6">
-          <div v-for="bone in bones" :key="bone.id" class="col-12">
-            <!-- NOTE: bootstrap overflow-hidden class থাকলেও CSS দিয়ে visible করে দিচ্ছি -->
-            <div class="listing-wide card border-0 overflow-hidden">
-              <div class="row g-0">
+     <div class="card-body pt-4">
+      <div class="row gy-6">
+        <div v-for="bone in filteredBones" :key="bone.id" class="col-12">
+          <div class="listing-wide card border-0 overflow-hidden">
+            <div class="row g-0">
 
-                <!-- LEFT -->
-                <div class="col-12 col-lg-4 left-col-smaller">
-                  <div class="gallery-wrap">
+              <!-- LEFT -->
+              <div class="col-12 col-lg-4 left-col-smaller">
+                <div class="gallery-wrap">
 
-                    <!-- WRAP for popout -->
-                    <div class="zoom-area">
+                  <!-- WRAP for popout -->
+                  <div class="zoom-area">
 
-                      <!-- MAIN IMAGE (hover target) -->
-                      <div
-                        class="main-zoom"
-                        :style="mainCoverStyle(bone)"
-                        @mousemove="onZoomMove($event, bone.id)"
-                        @mouseenter="onZoomEnter(bone.id)"
-                        @mouseleave="onZoomLeave(bone.id)"
-                        role="button"
-                        title="Hover to zoom"
-                      >
-                        <div class="cover-gradient"></div>
+                    <!-- MAIN IMAGE (hover target) -->
+                    <div
+                    class="main-zoom"
+                    :style="mainCoverStyle(bone)"
+                    @mousemove="onZoomMove($event, bone.id)"
+                    @mouseenter="onZoomEnter(bone.id)"
+                    @mouseleave="onZoomLeave(bone.id)"
+                    role="button"
+                    title="Hover to zoom"
+                    >
+                    <div class="cover-gradient"></div>
 
-                        <span class="badge badge-pill badge-active position-absolute top-0 start-0 m-3">
-                          Active
-                        </span>
+                    <span class="badge badge-pill badge-active position-absolute top-0 start-0 m-3">
+                      Active
+                    </span>
 
-                        <span class="badge badge-pill badge-warning position-absolute top-0 end-0 m-3">
-                          Ends in 2h
-                        </span>
+                    <span
+                    v-if="getRemainingTime(bone.expire_date) !== 'Expired'"
+                    class="badge badge-pill badge-warning position-absolute top-0 end-0 m-3"
+                    >
+                    Ends in {{ getRemainingTime(bone.expire_date) }}
+                  </span>
 
-                        <div class="zoom-hint">
-                          <i class="ti ti-zoom-in"></i>
-                          <span>Hover to zoom</span>
-                        </div>
-                      </div>
+                  <span
+                  v-else
+                  style="background:rgb(173 38 39)"
+                  class="badge badge-pill position-absolute top-0 end-0 m-3"
+                  >
+                  Expired
+                </span>
 
-                      <!-- ✅ POP-OUT ZOOM SECTION (outside main image) -->
-                      <div
-                        class="zoom-popout"
-                        v-show="isZooming(bone.id)"
-                        :style="zoomPopoutStyle(bone)"
-                        aria-hidden="true"
-                      >
-                        <div class="zoom-popout-head">
-                          <i class="ti ti-focus-2"></i>
-                          <span>Zoom Preview</span>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    <!-- THUMBS -->
-                    <div class="thumb-row">
-                      <button
-                        v-for="(img, i) in getImages(bone)"
-                        :key="img.key"
-                        class="thumb"
-                        :class="{ active: getActiveIndex(bone.id) === i }"
-                        @click="setActiveIndex(bone.id, i)"
-                        type="button"
-                        :title="'View image ' + (i + 1)"
-                      >
-                        <img :src="img.src" alt="thumb" />
-                      </button>
-                    </div>
-
-                  </div>
+                <div class="zoom-hint">
+                  <i class="ti ti-zoom-in"></i>
+                  <span>Hover to zoom</span>
                 </div>
+              </div>
 
-                <!-- RIGHT -->
-                <div class="col-12 col-lg-8 right-col-bigger">
-                  <div class="card-body info-body p-4 p-lg-5">
-
-                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-                      <div class="d-flex gap-3 align-items-center">
-                        <img
-                          class="publisher-avatar"
-                          :src="bone.user?.user_image
-                            ? FontendURL.replace(/\/$/, '') + '/storage/user/' + bone.user.user_image
-                            : '/no-image.png'"
-                          alt="publisher"
-                        />
-                        <div>
-                          <div class="fw-bold publisher-name">{{ bone.user?.name ?? 'Unknown' }}</div>
-                          <small class="text-muted">Published by</small>
-                        </div>
-                      </div>
-
-                      <div class="d-flex gap-2 flex-wrap justify-content-end">
-                        <span class="chip chip-primary">{{ bone.details?.[0]?.bone_type ?? 'N/A' }}</span>
-                        <span class="chip chip-soft">Case: <b>#{{ bone.id }}</b></span>
-                      </div>
-                    </div>
-
-                    <div class="listing-title-wide mb-3">{{ bone.name }}</div>
-
-                    <div class="meta-grid mb-4">
-                      <div class="meta-item">
-                        <div class="meta-label">Side</div>
-                        <div class="meta-value">{{ bone.details?.[0]?.body_side ?? 'N/A' }}</div>
-                      </div>
-                      <div class="meta-item">
-                        <div class="meta-label">Quantity</div>
-                        <div class="meta-value">{{ bone.details?.[0]?.quantity ?? 'N/A' }}</div>
-                      </div>
-                      <div class="meta-item">
-                        <div class="meta-label">Condition</div>
-                        <div class="meta-value">{{ bone.details?.[0]?.specimen_condition ?? 'N/A' }}</div>
-                      </div>
-                      <div class="meta-item">
-                        <div class="meta-label">Expire</div>
-                        <div class="meta-value">{{ bone.expire_date ?? 'N/A' }}</div>
-                      </div>
-                    </div>
-
-                    <div class="price-wrap-wide mb-4">
-                      <div class="price-box">
-                        <div class="price-label">Start Price</div>
-                        <div class="price-value">৳{{ bone.starting_price }}</div>
-                      </div>
-                      <div class="price-box active">
-                        <div class="price-label">Current Bid</div>
-                        <div class="price-value">৳16543</div>
-                      </div>
-                      <div class="price-box soft">
-                        <div class="price-label">Start Date</div>
-                        <div class="price-value small">{{ bone.start_date ?? 'N/A' }}</div>
-                      </div>
-                    </div>
-
-                    <div class="desc-box mb-4">
-                      <div class="desc-title">Description</div>
-                      <div class="desc-text">{{ bone.description }}</div>
-                    </div>
-
-                    <div class="d-flex flex-column flex-sm-row gap-2">
-                      <button class="btn btn-soft w-100">
-                        <i class="ti ti-eye"></i>
-                        View Details
-                      </button>
-                      <button class="btn btn-gradient w-100">
-                        <i class="ti ti-gavel"></i>
-                        Place Bid
-                      </button>
-                    </div>
-
-                  </div>
-                </div>
-
+              <!-- ✅ POP-OUT ZOOM SECTION (outside main image) -->
+              <div
+              class="zoom-popout"
+              v-show="isZooming(bone.id)"
+              :style="zoomPopoutStyle(bone)"
+              aria-hidden="true"
+              >
+              <div class="zoom-popout-head">
+                <i class="ti ti-focus-2"></i>
+                <span>Zoom Preview</span>
               </div>
             </div>
+
           </div>
 
+          <!-- THUMBS -->
+          <div class="thumb-row">
+            <button
+            v-for="(img, i) in getImages(bone)"
+            :key="img.key"
+            class="thumb"
+            :class="{ active: getActiveIndex(bone.id) === i }"
+            @click="setActiveIndex(bone.id, i)"
+            type="button"
+            :title="'View image ' + (i + 1)"
+            >
+            <img :src="img.src" alt="thumb" />
+          </button>
         </div>
+
       </div>
     </div>
 
+    <!-- RIGHT -->
+    <div class="col-12 col-lg-8 right-col-bigger">
+      <div class="card-body info-body p-4 p-lg-5">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+          <div class="d-flex gap-3 align-items-center">
+            <img
+            class="publisher-avatar"
+            :src="bone.user?.user_image
+            ? FontendURL.replace(/\/$/, '') + '/storage/user/' + bone.user.user_image
+            : '/no-image.png'"
+            alt="publisher"
+            />
+            <div>
+              <div class="fw-bold publisher-name">{{ bone.user?.name ?? 'Unknown' }}</div>
+              <small class="text-muted">Published by</small>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <span class="chip chip-primary">{{ bone.details?.[0]?.bone_type ?? 'N/A' }}</span>
+          </div>
+        </div>
+
+        <div class="listing-title-wide mb-3">{{ bone.name }}</div>
+
+        <div class="meta-grid mb-4">
+          <div class="meta-item">
+            <div class="meta-label">Side</div>
+            <div class="meta-value">{{ bone.details?.[0]?.body_side ?? 'N/A' }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Quantity</div>
+            <div class="meta-value">{{ bone.details?.[0]?.quantity ?? 'N/A' }}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Condition</div>
+            <div class="meta-value">{{ bone.details?.[0]?.specimen_condition ?? 'N/A' }}</div>
+          </div>
+          <div class="price-box soft">
+            <div class="price-label">Start Date</div>
+            <div class="price-value small">{{ formatDateTime(bone.start_date) ?? 'N/A' }}</div>
+          </div>
+        </div>
+
+        <div class="price-wrap-wide mb-4">
+          <div class="price-box">
+            <div class="price-label">Start Price</div>
+            <div class="price-value">৳{{ bone.starting_price }}</div>
+          </div>
+          <div class="price-box active">
+            <div class="price-label">Current Bid</div>
+            <div class="price-value">৳ {{ bone.latest_bid ? bone.latest_bid.amount : bone.starting_price }} </div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Expire Date</div>
+            <div class="meta-value">{{ formatDateTime(bone.expire_date) ?? 'N/A' }}</div>
+          </div>
+        </div>
+
+        <div class="desc-box mb-4">
+          <div class="desc-title">Description</div>
+          <div class="desc-text">{{ bone.description }}</div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-2">
+          <button class="btn btn-outline-primary w-100">
+            <i class="ti ti-eye"></i>
+            View Details
+          </button>
+          
+          <button
+          @click="bidsModel(bone)"
+          class="btn btn-primary w-100"
+          :disabled="isExpired(bone.expire_date) || bidLoading"
+          >
+          <i class="ti ti-gavel"></i>
+          Place Bid
+        </button>
+      </div>
+
+    </div>
   </div>
+
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+
+<!-- Bids Modal -->
+<div 
+v-if="bidsModelOpen" 
+class="modal fade show"
+style="display:block; background: rgba(0,0,0,0.5);"
+>
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h5 class="modal-title">Place Bid</h5>
+      <button 
+      type="button" 
+      class="btn-close" 
+      @click="bidsModelOpen = false">
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class=""></div>
+    <label class="form-label">Your Bid Amount</label>
+    <input 
+    v-model="bidAmount" 
+    type="number" 
+    class="form-control" 
+    placeholder="Enter amount" 
+    />
+  </div>
+
+  <div class="modal-footer">
+    <button 
+    type="button" 
+    class="btn btn-secondary" 
+    @click="bidsModelOpen = false">
+    Cancel
+  </button>
+
+  <button 
+  type="button" 
+  class="btn btn-primary" 
+  :disabled="bidLoading" 
+  @click="submitBid">
+  <span 
+  v-if="bidLoading" 
+  class="spinner-border spinner-border-sm me-1">
+</span>
+Submit Bid
+</button>
+</div>
+
+</div>
+</div>
+</div>
+
+<div v-if="pageLoading" class="page-loader">
+  <div class="loader-box">
+    <div class="spinner-border custom-spinner text-primary"></div>
+    <div class="mt-3 fw-bold">Loading Bones...</div>
+  </div>
+</div>
+
+</div>
+
 </template>
 
 <script setup>
-import { ref, onMounted, getCurrentInstance } from "vue";
+import { ref, onMounted, computed, onBeforeUnmount, getCurrentInstance } from "vue";
 import { useToast } from "vue-toastification";
-
+const pageLoading = ref(false);
 const toast = useToast();
 const { proxy } = getCurrentInstance();
 const http = proxy.$http;
 const FontendURL = proxy.$http.defaults.FontendURL;
 
+const bidLoading = ref(false)
+const hideExpired = ref(false);
+const nowTs = ref(Date.now());
+let timer = null;
 const bones = ref([]);
+const boneId = ref(null)
+const bidAmount = ref(null)
+const bidsModelOpen = ref(false)
+
 const ui = ref({});
-
-
-
 const ensureUI = (id) => {
   if (!ui.value[id]) {
     ui.value[id] = { activeIndex: 0, x: 50, y: 50, zoom: false };
@@ -291,8 +378,8 @@ const onZoomMove = (e, id) => {
 const getImages = (bone) => {
   const list = [];
   const cover = bone.image
-    ? FontendURL.replace(/\/$/, "") + "/" + bone.image.replace(/^\//, "")
-    : "/no-image.png";
+  ? FontendURL.replace(/\/$/, "") + "/" + bone.image.replace(/^\//, "")
+  : "/no-image.png";
 
   list.push({ key: `cover-${bone.id}`, src: cover });
 
@@ -335,21 +422,135 @@ const zoomPopoutStyle = (bone) => {
 };
 
 
+const filteredBones = computed(() => {
+  if (!hideExpired.value) return bones.value;
+
+  return bones.value.filter(
+    (bone) => !isExpired(bone.expire_date)
+    );
+});
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return "N/A";
+
+  const date = new Date(String(dateString).replace(" ", "T"));
+  if (!Number.isFinite(date.getTime())) return "Invalid Date";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const isExpired = (expireDate) => {
+  if (!expireDate) return true;
+  const end = new Date(String(expireDate).replace(" ", "T"));
+  if (!Number.isFinite(end.getTime())) return true;
+  return end.getTime() <= nowTs.value;
+};
+
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer);
+});
+
+
+const getRemainingTime = (expireDate) => {
+  if (!expireDate) return null;
+
+  const end = new Date(String(expireDate).replace(" ", "T"));
+  const now = new Date(nowTs.value);
+
+  if (!Number.isFinite(end.getTime())) return "Invalid date";
+  if (end <= now) return "Expired";
+
+  let years = end.getFullYear() - now.getFullYear();
+  let months = end.getMonth() - now.getMonth();
+  let days = end.getDate() - now.getDate();
+  let hours = end.getHours() - now.getHours();
+  let minutes = end.getMinutes() - now.getMinutes();
+  let seconds = end.getSeconds() - now.getSeconds();
+
+  // negative adjust
+  if (seconds < 0) { seconds += 60; minutes--; }
+  if (minutes < 0) { minutes += 60; hours--; }
+  if (hours < 0) { hours += 24; days--; }
+  if (days < 0) {
+    const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+    days += prevMonth.getDate();
+    months--;
+  }
+  if (months < 0) { months += 12; years--; }
+
+  const pad = (n) => String(n).padStart(2, "0");
+
+  let result = "";
+
+  if (years > 0) result += `${years}y `;
+  if (months > 0) result += `${months}m `;
+  if (days > 0) result += `${days}d `;
+
+  result += `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+
+  return result.trim();
+};
+
+
 
 
 const fetchBones = async () => {
+
   try {
-    const res = await http.get("dashboard/bones");
-    bones.value = res.data?.data ?? [];
-    bones.value.forEach((b) => ensureUI(b.id));
-  } catch (error) {
-    console.error("Details Fetch Error:", error);
-    toast.error("Failed to load bone details!");
-  }
+   pageLoading.value = true;
+   const res = await http.get("dashboard/bones");
+   console.log(res)
+   bones.value = res.data?.data ?? [];
+   bones.value.forEach((b) => ensureUI(b.id));
+ } catch (error) {
+  console.error("Details Fetch Error:", error);
+  toast.error("Failed to load bone details!");
+}finally{
+  pageLoading.value = false;
+}
 };
+
+const bidsModel = (bone) => {
+  if (isExpired(bone.expire_date)) {
+    toast.error("This post is expired. You can't place bid.");
+    return;
+  }
+
+  boneId.value = bone.id
+  bidAmount.value = bone.latest_bid ? bone.latest_bid.amount : bone.starting_price
+  bidsModelOpen.value = true
+}
+
+const submitBid = async () => {
+  try {
+    bidLoading.value = true
+
+    const res = await http.post("bids-create", {
+      bid_amount: bidAmount.value,
+      bonepost_id: boneId.value,
+    })
+
+    await fetchBones();
+    toast.success(res.data?.message ?? "Bid submitted!")
+    bidsModelOpen.value = false
+  } catch (error) {
+    console.error(error)
+    toast.error(error?.response?.data?.message ?? "Failed to submit bid!")
+  } finally {
+    bidLoading.value = false
+  }
+}
+
 
 onMounted(async () => {
   await fetchBones();
+  timer = setInterval(() => {
+    nowTs.value = Date.now();
+  }, 1000);
 });
 </script>
 
@@ -632,5 +833,24 @@ onMounted(async () => {
   padding: 12px 14px;
   font-size: 16px;
   background:linear-gradient(135deg,var(--p1),var(--p2));
+}
+.custom-spinner {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.4em;
+  border-color: #1500f1 transparent #1500f1 transparent;
+}
+.page-loader{
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-box{
+  text-align: center;
 }
 </style>

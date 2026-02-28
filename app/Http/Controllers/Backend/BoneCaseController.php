@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Backend\BonePost;
+use App\Models\Backend\Bid;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -35,10 +36,7 @@ public function store(Request $request)
         'image'          => 'required|image|max:5120',
     ]);
 
-    // ✅ user_id add
     $validated['user_id'] = auth()->id();
-
-    // ✅ image upload
     if ($request->hasFile('image')) {
         $file = $request->file('image');
         $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
@@ -51,6 +49,35 @@ public function store(Request $request)
     return response()->json(['message' => 'Post created successfully!'], 201);
 }
 
+
+public function bidsCreate(Request $request)
+{
+    $request->validate([
+        'bonepost_id' => 'required|exists:bone_posts,id',
+        'bid_amount'  => 'required|numeric|min:1',
+    ]);
+
+    $bone = BonePost::findOrFail($request->bonepost_id);
+
+    $highestBid = $bone->bids()->max('amount');
+    $highestBid = $highestBid ?? $bone->starting_price;
+
+    if ((float)$request->bid_amount <= (float)$highestBid) {
+        return response()->json([
+            'message' => 'Bid must be higher than current highest bid',
+        ], 422);
+    }
+
+    Bid::create([
+        'bonepost_id' => $bone->id,  
+        'user_id'     => auth()->id(),
+        'amount'      => $request->bid_amount,
+    ]);
+
+    return response()->json([
+        'message' => 'Bid submitted successfully',
+    ]);
+}
 
 public function update(Request $request, $id)
 {
