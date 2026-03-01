@@ -16,6 +16,8 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'home')->name('dashboard');
         Route::get('/dashboard/bones', [DashboardController::class, 'create'])->name('dashboard.bones');
+
+      Route::get('/dashboard/bone-details/{id}', 'boneDetails')->name('dashboard.bone.details');
     });
 
     Route::get('/getuser_id', function () {

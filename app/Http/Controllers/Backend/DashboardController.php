@@ -37,4 +37,18 @@ public function create()
     ], 200);
 }
 
+public function boneDetails($id)
+{
+    $bone = BonePost::with([
+        'latestBid.user',
+        'bids.user',
+        'user',
+        'details.images'
+    ])->findOrFail($id);
+
+    return view('backend.boneCase.boneDetails', compact('bone'));
+}
+
+
+
 }

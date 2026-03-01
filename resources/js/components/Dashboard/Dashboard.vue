@@ -149,6 +149,14 @@
           </button>
         </div>
 
+    <div class="highest-bidder-card">
+      <div class="hb-head">
+        <i class="ti ti-crown"></i>
+        <h6>Highest Bidder</h6>
+      </div>
+      <p class="hb-name">{{ bone.latest_bid?.user?.name ?? 'No bids yet' }}</p>
+    </div>
+
       </div>
     </div>
 
@@ -218,10 +226,13 @@
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
-          <button class="btn btn-outline-primary w-100">
-            <i class="ti ti-eye"></i>
-            View Details
-          </button>
+        <a 
+          :href="`/backend/dashboard/bone-details/${bone.id}`"
+          class="btn btn-outline-primary w-100"
+        >
+          <i class="ti ti-eye"></i>
+          View Details
+        </a>
           
           <button
           @click="bidsModel(bone)"
@@ -443,67 +454,54 @@ const formatDateTime = (dateString) => {
   });
 };
 
-const isExpired = (expireDate) => {
-  if (!expireDate) return true;
-  const end = new Date(String(expireDate).replace(" ", "T"));
-  if (!Number.isFinite(end.getTime())) return true;
-  return end.getTime() <= nowTs.value;
-};
-
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
+const parseExpireDate = (dateStr) => {
+  if (!dateStr) return null;
 
-const getRemainingTime = (expireDate) => {
-  if (!expireDate) return null;
-
-  const end = new Date(String(expireDate).replace(" ", "T"));
-  const now = new Date(nowTs.value);
-
-  if (!Number.isFinite(end.getTime())) return "Invalid date";
-  if (end <= now) return "Expired";
-
-  let years = end.getFullYear() - now.getFullYear();
-  let months = end.getMonth() - now.getMonth();
-  let days = end.getDate() - now.getDate();
-  let hours = end.getHours() - now.getHours();
-  let minutes = end.getMinutes() - now.getMinutes();
-  let seconds = end.getSeconds() - now.getSeconds();
-
-  // negative adjust
-  if (seconds < 0) { seconds += 60; minutes--; }
-  if (minutes < 0) { minutes += 60; hours--; }
-  if (hours < 0) { hours += 24; days--; }
-  if (days < 0) {
-    const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
-    days += prevMonth.getDate();
-    months--;
+  // যদি expire_date শুধু date হয় (YYYY-MM-DD) তাহলে দিন শেষ ধরে নাও
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(dateStr + "T23:59:59");
   }
-  if (months < 0) { months += 12; years--; }
 
-  const pad = (n) => String(n).padStart(2, "0");
-
-  let result = "";
-
-  if (years > 0) result += `${years}y `;
-  if (months > 0) result += `${months}m `;
-  if (days > 0) result += `${days}d `;
-
-  result += `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-
-  return result.trim();
+  // "YYYY-MM-DD HH:mm:ss" -> "YYYY-MM-DDTHH:mm:ss"
+  const normalized = String(dateStr).replace(" ", "T");
+  return new Date(normalized);
 };
 
+const pad2 = (n) => String(n).padStart(2, "0");
 
+const getRemainingTime = (expireDate) => {
+  const end = parseExpireDate(expireDate);
+  if (!end || !Number.isFinite(end.getTime())) return "Invalid date";
 
+  const diff = end.getTime() - nowTs.value; // nowTs = Date.now()
+
+  if (diff <= 0) return "Expired";
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (days > 0) return `${days}d ${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
+  return `${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
+};
+
+const isExpired = (expireDate) => {
+  const end = parseExpireDate(expireDate);
+  if (!end || !Number.isFinite(end.getTime())) return true;
+  return end.getTime() <= nowTs.value;
+};
 
 const fetchBones = async () => {
 
   try {
    pageLoading.value = true;
    const res = await http.get("dashboard/bones");
-   console.log(res)
    bones.value = res.data?.data ?? [];
    bones.value.forEach((b) => ensureUI(b.id));
  } catch (error) {
@@ -852,5 +850,71 @@ onMounted(async () => {
 
 .loader-box{
   text-align: center;
+}
+
+
+.highest-bidder-card{
+  margin-top: 12px;
+  padding: 14px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(109,40,217,.10), rgba(14,165,233,.08));
+  border: 1px solid rgba(109,40,217,.18);
+  box-shadow: 0 10px 28px rgba(15,23,42,.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.highest-bidder-card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:4px;
+  background: linear-gradient(90deg, rgba(109,40,217,.9), rgba(14,165,233,.9));
+}
+
+.hb-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom: 8px;
+  color: rgba(15,23,42,.75);
+}
+
+.hb-head i{
+  font-size: 18px;
+  color: rgba(245,158,11,.95); 
+}
+
+.hb-head h6{
+  margin:0;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: .9px;
+  text-transform: uppercase;
+}
+
+.hb-name{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  color: rgba(15,23,42,.92);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.highest-bidder-card:hover{
+  transform: translateY(-2px);
+  transition: .2s ease;
+  box-shadow: 0 18px 44px rgba(15,23,42,.12);
+}
+
+@media (max-width: 991px){
+  .highest-bidder-card{
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .hb-name{ font-size: 15px; }
 }
 </style>
