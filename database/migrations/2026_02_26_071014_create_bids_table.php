@@ -15,7 +15,7 @@ return new class extends Migration
           $table->id();
             $table->foreignId('bonepost_id')->constrained('bone_posts')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->decimal('amount', 12, 2); // bid amount
+            $table->decimal('amount', 12, 2);
             $table->timestamps();
             $table->index(['bonepost_id', 'amount']);
         });

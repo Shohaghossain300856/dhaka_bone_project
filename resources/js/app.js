@@ -3,6 +3,7 @@ import Dashboard from "./components/Dashboard/Dashboard.vue";
 import BoneCreate from "./components/backend/BoneCases/BoneCreate.vue";
 import boneDetails from "./components/backend/BoneCases/boneDetailsCreate.vue";
 import boneDetailsShow from "./components/backend/BoneCases/BoneDetails.vue";
+import delivary from "./components/backend/Delivary/index.vue";
 import http from "./lib/http";
 
 
@@ -26,6 +27,7 @@ app.component("dashboard", Dashboard);
 app.component("bonecreate", BoneCreate);
 app.component("bonedetails", boneDetails);
 app.component("bonedetailshow", boneDetailsShow);
+app.component("delivary", delivary);
  
  
 app.use(Toast, {

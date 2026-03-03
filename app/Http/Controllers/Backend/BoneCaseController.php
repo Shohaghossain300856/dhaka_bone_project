@@ -37,6 +37,8 @@ public function store(Request $request)
     ]);
 
     $validated['user_id'] = auth()->id();
+     $validated['status'] = 'active';
+
     if ($request->hasFile('image')) {
         $file = $request->file('image');
         $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();

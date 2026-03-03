@@ -30,6 +30,8 @@ class PermissionSeeder extends Seeder
     'user-create',
     'user-edit',
     'user-delete',
+    'bone-cases',
+    'delivary',
 ];
 
 

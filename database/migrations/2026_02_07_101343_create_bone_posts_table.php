@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('expire_date')->nullable();
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            $table->enum('status', ['active','sold','delivered'])->default('active');
             $table->timestamps();
         });
     }

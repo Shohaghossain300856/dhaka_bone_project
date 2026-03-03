@@ -43,6 +43,29 @@
 
 @endcanany
 
+ @canany(['delivary'])
+
+<li class="menu-item {{ request()->routeIs('delivary.*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons ti ti-bone"></i>
+        <div data-i18n="Delivary">Delivary</div>
+    </a>
+
+    <ul class="menu-sub" style="{{ request()->routeIs('delivary.*') ? 'display:block;' : '' }}">
+
+        <li class="menu-item {{ request()->routeIs('delivary.index') ? 'active' : '' }}">
+            <a href="{{ route('delivary.index') }}" class="menu-link">
+                <div data-i18n="Delivary">Delivary</div>
+            </a>
+        </li>     
+
+  
+
+    </ul>
+</li>
+
+@endcanany
+
 
   {{-- Setting --}}
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\BoneCaseController;
 use App\Http\Controllers\Backend\BoneDetailsController;
 use App\Http\Controllers\Backend\BoneImageController;
+use App\Http\Controllers\Backend\DelivaryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -63,9 +64,14 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
 
     
 
-    Route::resource('bone-cases-create',BoneCaseController::class);
-    Route::resource('bone-details-create',BoneDetailsController::class);
-   Route::post('bids-create', [BoneCaseController::class, 'bidsCreate']);
+     Route::resource('bone-cases-create',BoneCaseController::class);
+     Route::resource('bone-details-create',BoneDetailsController::class);
+     Route::resource('delivary',DelivaryController::class);
+     
+    Route::post('bids-create', [BoneCaseController::class, 'bidsCreate']);
+    Route::put('delivary/{id}/status', [DelivaryController::class, 'updateStatus']);
+  
+
 
 });
 
