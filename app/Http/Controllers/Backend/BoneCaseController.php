@@ -16,13 +16,17 @@ class BoneCaseController extends Controller
         return view('backend.boneCase.boneCreate');
     }
 
-    public function create()
-    {
-      
+  public function create()
+{
+    $user = auth()->user();
+
+    if ($user->hasRole('admin') || $user->hasRole('super-admin')) {
         $data = BonePost::latest()->get();
-        
-        return response()->json($data, 200);
+    } else {
+        $data = BonePost::where('user_id', $user->id)->latest()->get();
     }
+    return response()->json($data, 200);
+}
 
 public function store(Request $request)
 {

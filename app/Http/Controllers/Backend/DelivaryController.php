@@ -14,19 +14,25 @@ class DelivaryController extends Controller
         return view('backend.delivary.index');
     }
 
-    public function create()
-    {
-        $bones = BonePost::where('expire_date', '<', now())->with([
+ public function create()
+ {
+    $user = auth()->user();
+    $bones = BonePost::where('expire_date', '<', now())
+        ->when(!$user->hasRole(['super-admin', 'admin']), function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with([
             'latestBid.user',
             'user',
             'details.images'
-        ])->get();
+        ])
+        ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $bones
-        ], 200);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $bones
+    ], 200);
+}
 
      public function updateStatus(Request $request, $id)
     {

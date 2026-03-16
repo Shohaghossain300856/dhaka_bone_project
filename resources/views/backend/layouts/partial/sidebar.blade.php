@@ -40,11 +40,8 @@
 
     </ul>
 </li>
-
 @endcanany
-
  @canany(['delivary'])
-
 <li class="menu-item {{ request()->routeIs('delivary.*') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons ti ti-bone"></i>
@@ -58,17 +55,32 @@
                 <div data-i18n="Delivary">Delivary</div>
             </a>
         </li>     
-
-  
-
     </ul>
 </li>
 
 @endcanany
 
+@canany(['reports'])
+<li class="menu-item {{ request()->routeIs('reports.*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons ti ti-bone"></i>
+        <div data-i18n="Reports">Reports</div>
+    </a>
+
+    <ul class="menu-sub" style="{{ request()->routeIs('reports.*') ? 'display:block;' : '' }}">
+
+        <li class="menu-item {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+            <a href="{{ route('reports.index') }}" class="menu-link">
+                <div data-i18n="Reports">Reports</div>
+            </a>
+        </li>
+
+    </ul>
+</li>
+@endcanany
+
 
   {{-- Setting --}}
-
   @canany(['setting-index','setting-create','setting-edit','setting-delete'])
     @php
       $settingOpen = request()->is('backend/setting/*') || request()->routeIs('setting.*');

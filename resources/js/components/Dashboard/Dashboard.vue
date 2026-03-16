@@ -94,8 +94,8 @@
                     >
                     <div class="cover-gradient"></div>
 
-                    <span class="badge badge-pill badge-active position-absolute top-0 start-0 m-3">
-                      Active
+                    <span style="text-transform: capitalize;" class="badge badge-pill badge-active position-absolute top-0 start-0 m-3">
+                      {{bone.status}}
                     </span>
 
                     <span
@@ -461,7 +461,6 @@ onBeforeUnmount(() => {
 const parseExpireDate = (dateStr) => {
   if (!dateStr) return null;
 
-  // যদি expire_date শুধু date হয় (YYYY-MM-DD) তাহলে দিন শেষ ধরে নাও
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     return new Date(dateStr + "T23:59:59");
   }
@@ -504,6 +503,7 @@ const fetchBones = async () => {
    const res = await http.get("dashboard/bones");
    bones.value = res.data?.data ?? [];
    bones.value.forEach((b) => ensureUI(b.id));
+   console.log(res)
  } catch (error) {
   console.error("Details Fetch Error:", error);
   toast.error("Failed to load bone details!");

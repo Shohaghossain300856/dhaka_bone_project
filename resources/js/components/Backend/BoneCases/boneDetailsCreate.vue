@@ -208,7 +208,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Bone Post</th>
+              <th>Bone Title</th>
               <th>Type</th>
               <th>Side</th>
               <th>Quantity</th>
@@ -225,7 +225,7 @@
               <td>{{ item.quantity }}</td>
 
               <td>
-                <div v-if="item.images?.length" class="d-flex flex-wrap gap-2">
+                <div v-if="item.images?.length" class="d-flex gap-2">
                   <img
                     v-for="img in item.images"
                     :key="img.id"

@@ -19,12 +19,21 @@ class BoneDetailsController extends Controller
         return view('backend.boneCase.boneDetailsCreate');
     }  
 
-      public function create()
-      {
-          $data = BoneDetail::with('bone','images')->latest()->get();
-
-          return response()->json($data);
-      }
+     public function create()
+{
+    $user = auth()->user();  
+    if ($user->hasRole('admin') || $user->hasRole('super-admin')) {
+        $data = BoneDetail::with('bone', 'images')->latest()->get();
+    } else {
+        $data = BoneDetail::whereHas('bone', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with('bone', 'images')
+        ->latest()
+        ->get();
+    }
+    return response()->json($data);
+}
 
 public function store(Request $request)
 {

@@ -24,7 +24,9 @@ class DashboardController extends Controller
     }
 
 public function create()
-{
+{   
+
+    $userId = Auth()->User()->id;
     $bones = BonePost::with([
         'latestBid.user',
         'user',

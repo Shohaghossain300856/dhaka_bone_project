@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\BoneCaseController;
 use App\Http\Controllers\Backend\BoneDetailsController;
 use App\Http\Controllers\Backend\BoneImageController;
 use App\Http\Controllers\Backend\DelivaryController;
+use App\Http\Controllers\Backend\ReportsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +71,15 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
      
     Route::post('bids-create', [BoneCaseController::class, 'bidsCreate']);
     Route::put('delivary/{id}/status', [DelivaryController::class, 'updateStatus']);
+
+
+
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
+    
+    Route::get('get-bone-reports', [ReportsController::class, 'getBoneReports'])->name('get-bone-reports');
+
+
+
   
 
 

@@ -274,25 +274,37 @@ const generatePrintHTML = (bonesToPrint) => {
         <title>Dhaka Medical College Bone Auction</title>
         <style>
           body { font-family: Arial; padding:20px; font-size:12px; text-align:center; }
-          .head-padding{ padding-bottom:50px; }
+          .head-padding{ padding-bottom:35px; }
           h2, h4, h3 { margin:0;}
-          h2 { font-weight:bold; font-size:16px;}
-          h4 { font-weight:normal; font-size:12px; color:#555; margin-bottom:10px;}
-          h3 { font-size:14px; margin:15px 0; font-weight:bold;}
+          h2 { font-weight:bold; font-size:22px;}
+          h3 { font-size:14px; margin:4px 0; font-weight:bold;}
           table { width:100%; border-collapse:collapse; margin:0 auto; font-size:11px;}
           th, td { border:1px solid #ddd; padding:5px; text-align:left; }
           th { background:#f8f8f8; }
-          .signature { display:flex; justify-content:center; gap:50px; margin-top:50px; }
+         .signature {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px; 
+            margin-top: 50px;
+        }
           .signature div { border-top:1px solid #000; padding-top:5px; width:200px; text-align:center; font-size:12px; }
         </style>
       </head>
       <body>
         <div class="head-padding">
           <h2>Dhaka Medical College</h2>
-          <h4>Shahbagh, Dhaka-1000, Bangladesh</h4>
           <h3>Bone Auction Details</h3>
         </div>
         <table>
+      <colgroup>
+        <col style="width: 20%;">
+        <col style="width: 30%;">
+        <col style="width: 10%;">
+        <col style="width: 11%;">
+        <col style="width: 10%;">
+        <col style="width: 10%;">
+        <col style="width: 9%;">
+      </colgroup>
           <thead>
             <tr>
               <th>User</th>
